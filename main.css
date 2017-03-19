@@ -1,0 +1,90 @@
+body {
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+	font-family: 'Open Sans', sans-serif;
+}
+
+canvas{
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	display: none;
+}
+
+#count{
+	font-size: 10em;
+	position: absolute;
+	width: 100%;
+	text-align: center;
+}
+
+#desktop{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: magenta;
+	display: none;
+}
+
+#input{
+	display: block;
+	width: calc(90% - 2em);
+	padding: 1em;
+}
+
+#mobile{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: teal;
+	color: #fff;
+	display: block;
+}
+
+#mobile input{
+	margin: 3em 1em;
+}
+
+#refresh{
+	position: absolute;
+	height: 2em;
+	width: 2em;
+	background: url('images/refresh.png');
+	background-size: contain;
+	right: 0;
+	margin: 0.75em;
+}
+
+#refresh a {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+#riddle {
+	margin: 3em;
+}
+
+#score {
+	position: absolute;
+	margin: 0 1em;
+}
+
+#status{
+	margin: 0 3em;
+	display: block;
+}
+
+@media screen and (min-width: 500px), screen and (min-height: 1000px){
+	canvas{
+		display: block;
+	}
+	#desktop{
+		display: block;
+	}
+
+	#mobile {
+		display: none;
+	}
+}

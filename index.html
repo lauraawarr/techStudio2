@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<title>Interactive 3D</title>
+
+		<script>
+		    // if (window.innerWidth > 500) {
+		    //     var head = document.getElementsByTagName('head')[0];
+
+		    //     var s1 = document.createElement("script");
+		    //     s1.type = "text/javascript";
+		    //     s1.src = "http://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js";
+		    //     head.appendChild(s1);
+
+		    //     var s2 = document.createElement("script");
+		    //     s2.type = "text/javascript";
+		    //     s2.src = "js/Detector.js";
+		    //     head.appendChild(s2);
+
+		    //     var s3 = document.createElement("script");
+		    //     s3.type = "text/javascript";
+		    //     s3.src = "js/OrbitControls.js";
+		    //     head.appendChild(s3);
+
+		    //     var s4 = document.createElement("script");
+		    //     s4.type = "text/javascript";
+		    //     s4.src = "js/KeyboardState.js";
+		    //     head.appendChild(s4);
+
+		    //     var s5 = document.createElement("script");
+		    //     s5.type = "text/javascript";
+		    //     s5.src = "js/THREEx.FullScreen.js";
+		    //     head.appendChild(s5);
+
+		    //     var s6 = document.createElement("script");
+		    //     s6.type = "text/javascript";
+		    //     s6.src = "js/THREEx.WindowResize.js";
+		    //     head.appendChild(s6);
+		    // }
+		</script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js" ></script>
+		<script src="js/Detector.js" ></script>
+		<script src="js/OrbitControls.js" ></script>
+		<script src="js/KeyboardState.js" ></script>
+		<script src="js/THREEx.FullScreen.js" ></script>
+		<script src="js/THREEx.WindowResize.js" ></script>
+		<script src="js/modernizr-custom.js" ></script>
+
+		<link rel="stylesheet" type="text/css" href="main.css">
+	</head>
+	<body>
+	    <div id="desktop">
+	    	<span id="count"></span>
+	    	<canvas></canvas>
+	    </div>
+	 	<div id="mobile" data-role="page">
+	 		<div id="score">
+		 		<h2>0</h2>
+		 	</div>
+		 	<div id="refresh">
+		 		<a href="index.html"></a>
+		 	</div>
+	 		<p id="riddle" data-role="main"></p>
+	 		<span id="status">Connecting...</span>
+	        <input type="text" id="input" disabled="disabled" />
+	 	</div>
+
+	    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	    <script type="text/javascript" src="frontend.js"></script>
+	</body>
+</html>
