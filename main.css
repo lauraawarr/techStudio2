@@ -2,7 +2,8 @@ body {
 	width: 100vw;
 	height: 100vh;
 	margin: 0;
-	font-family: 'Open Sans', sans-serif;
+
+	font-family: 'Open Sans';
 }
 
 canvas{
@@ -13,18 +14,22 @@ canvas{
 }
 
 #count{
-	font-size: 10em;
+	font-size: 1.5em;
 	position: absolute;
-	width: 100%;
+	color: #fff;
 	text-align: center;
+	top: 0;
+	left: 1em;
 }
 
 #desktop{
 	position: fixed;
 	width: 100%;
 	height: 100%;
-	background-color: magenta;
+	background-color: #000;
 	display: none;
+
+	font-family: 'Coming Soon', cursive;
 }
 
 #input{
@@ -71,12 +76,32 @@ canvas{
 	margin: 0 1em;
 }
 
+#skyline {
+	position: absolute;
+	bottom: 20vh;
+}
+
+.path {
+  stroke-dasharray: 8000;
+  stroke-dashoffset: 8000;
+  animation: draw 10s linear;
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 8000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 #status{
 	margin: 0 3em;
 	display: block;
 }
 
-@media screen and (min-width: 500px), screen and (min-height: 1000px){
+@media screen and (min-width: 500px), screen and (min-height: 800px){
 	canvas{
 		display: block;
 	}

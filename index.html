@@ -4,6 +4,7 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Coming+Soon" rel="stylesheet">
 		<title>Interactive 3D</title>
 
 		<script>
@@ -53,8 +54,17 @@
 	</head>
 	<body>
 	    <div id="desktop">
+	    	<div id="myCanvas"></div>
 	    	<span id="count"></span>
-	    	<canvas></canvas>
+	    		
+	    		<!-- Skyline SVG -->
+	    	<svg id="skyline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2312.04 299.69"><defs>
+	    		<style>
+	    			.cls-1{fill:none;stroke:#fff;stroke-miterlimit:10;stroke-width:3px;}
+	    		</style></defs><title>skyline</title>
+	    		<g id="Layer_2" data-name="Layer 2"><g id="Layer_2-2" data-name="Layer 2"><path class="path cls-1" d="M0,295.53H9.6v-72h6.55v-7.28h16v79.31h13.1V233H64.17V171.1H75.81v-9.46H94.73v8h8v98.23H134v27.65h26.19V228.59h4.66V217.35h9.27V207.21l19.2.22V219.5h6v76H240.8V284l9.92.22V217.78h22.86l7.76-7.76h20.06V248.4l17.69.22V214.54h14.24v-8.2h23.29v11.43l10.14.22v15.75l10.14.22V268.9h9.49v26.63h22V279h9.92V133.66h8.84V120.72h41.63V267l31.06-.22V233.09h21.57V165.58l9.27-10.35,26.75-.43,8.41,9.06,11.86.43v50.9h5.82V248.4l21.78.22V64l37.1-38H645V48.46L673.26,48v124l17.47-.22v-44l9.49-10.14,33.65-.43V251.64h20.27v45.29h30.41V273.42h10.57l6.26-6.9h14.88V199.44l19-22h33.43v13.8H895V296.07l20.49-20.46V251.42l10.14.22V200.31h9.27v-9.06l19.84-.43v9.71h12.94v11.65l13.16,13.16v13.59L999,257.25h30V239.56h8.84v-8.41l15.1.22v26.31l20.71-.22V204h9.27V193.62l19.84.22V204l8.41-.22v90.37L1131,274.29l10.14.22V257h11.43V177h7.55v-17.9l5.39.22V138H1184v19h5.39v20.92H1198v17.26h7.55v67.3l32.57,31.92H1250V237.84l6.26-6V49.11l45.29-45.49L1302.64,212l21.57.22v28.69l5.39,6.9V295h28.9V234.94l10.69.21v-12l19.51.2.2-14.52h14.74v-8.51h19.09l18.47,19.09h8.92v76h24.49V233.07h10.79v-7.26l18.68.21v8.92l9.75.21v32.79h2.91l9.75-9.55v-63.3h19.09l6.43,6.43v33l10.38,11.21v51.2h23.66V180.15h28v51.68h14.32V255.9l11.21,12h11.62l7.26-7.26V233.49l24.07-.42v18.06l14.53,15.15h2.28v13.28h32.38V236.81H1759V206.3l35.49.62v47.73l19.72.21V240.75l7.68-7.68H1843l7.68-8.09,20.55-.21v48.77l20.13-.21V230.17h17.85V218.75l22.21.21v55l22-.62v-24.9l6-8.09V185.13l23.87.21v50l20.34.21,8.72,7.89v42.34l13.08.21V205.05h30.51v41.51h16.81v48.36h45V162.09h11.41V151.92h13.08v9.34l7.68.21v66.41h22.62V210.24l7.89-8.09,17,.21v75.13l1.66,1.87h5.19l1.25-1.87V265.24l9.34-9.75,9.55-.21v-66l14.32-14.53,18.47-.21V294.3l28.64-.21V233.7l26.1-.62"/></g></g>
+	    	</svg>
+	    	
 	    </div>
 	 	<div id="mobile" data-role="page">
 	 		<div id="score">

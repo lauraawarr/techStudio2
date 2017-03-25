@@ -29,17 +29,16 @@ $(function () {
     }
 
     // open connection
-    var connection = new WebSocket('ws://192.168.0.9:1337'); //192.168.0.6 //10.16.36.148
+    var connection = new WebSocket('ws://192.168.0.60:1337');
 
     connection.onopen = function () {
-        // first we want users to enter their names
         input.removeAttr('disabled');
         status.text('Enter answer:');
     };
 
     connection.onerror = function (error) {
-        // just in there were some problems with conenction...
-        count.html($('<p>', { text: 'Sorry, but there\'s some problem with your '
+        // just in there were some problems with connection...
+        status.html($('<p>', { text: 'Sorry, there\'s some problem with your '
                                     + 'connection or the server is down.' } ));
     };
 
@@ -51,19 +50,17 @@ $(function () {
             console.log('This doesn\'t look like a valid JSON: ', message.data);
             return;
         }
-        console.log(message);
+    
 		if (json.type === 'count') { 
    		 	updateCount(json.data);
-	 	} else if (json.type === 'history') { 
-	 		createSpheres(json.data);
-
+	 	} else if (json.type === 'color') { 
+	 		$('#mobile').css({
+				'background-color': json.data
+			});
+	
    		} else if (json.type === 'newSphere') { 
-   		 	updateCount(json.data.count);
+   		 	if (json.data.drop == false) updateCount(json.data.count);
    		 	addSphere(json.data);
-   		 	console.log(json.data.score)
-
-	 	} else if (json.type === 'dropSphere') { 
-	 		addSphere(json.data);
 
    		} else {
             console.log('Hmm..., I\'ve never seen JSON like this: ', json);
@@ -114,6 +111,7 @@ $(function () {
 
     setInterval(function() {
         if (connection.readyState !== 1) {
+        	console.log('HELP!');
             status.text('Error');
             input.attr('disabled', 'disabled').val('Unable to comminucate '
                                                  + 'with the WebSocket server.');
@@ -134,12 +132,8 @@ $(function () {
     		.toLowerCase()
     		.replace(/\s/g, '');
     	if (answer.includes(riddleA)){
-    		//update user score
-    		if (localStorage) {
-   		 		score++;
-   		 		$('#score > h2').text(score);
-				localStorage.score = JSON.stringify(score);
-			}
+    		//increase user score
+    		score++;
     		// send the message as an ordinary text
             connection.send(score);
             input.val('');
@@ -147,9 +141,16 @@ $(function () {
             getRiddle();
      
     	} else {
+    		//reset user score
+    		score = 0;
     		connection.send(false);
 			console.log('the answer is wrong');
 			status.text('Wrong...');
+		}
+		//save score to localstorage
+		if (localStorage) {
+	 		$('#score > h2').text(score);
+			localStorage.score = JSON.stringify(score);
 		}
     }
 
@@ -163,7 +164,6 @@ $(function () {
 
 		xhr.done(function(data){
 			riddleData = JSON.parse(xhr.responseText);
-			console.log(riddleData);
 			setTimeout(function(){
 				riddle.text(riddleData.question);
 				status.text('Enter answer:');
@@ -178,12 +178,25 @@ $(function () {
 	*/
 		// SCENE
 		var scene;
-		if (( Modernizr.touchevents ) && ( Modernizr.devicemotion,deviceorientation )) {
+		var container = document.getElementById('myCanvas');
+
+		var heightMatch = window.matchMedia("(max-height: 800px)").matches;
+
+		if (( Modernizr.touchevents ) && ( Modernizr.devicemotion && Modernizr.deviceorientation ) && (heightMatch)) {
 			// Mobile device
 	
 		} else {
 		  // Not mobile device, then create scene
 			scene = new THREE.Scene();
+
+			window.addEventListener('load', function(){
+				setTimeout(function(){
+					$('.path').css({
+						'stroke-dasharray': '0',
+  						'stroke-dashoffset':'0'
+					})
+				}, 9500)
+			});
 		};//
 		
 		// CAMERA
@@ -202,7 +215,7 @@ $(function () {
 			var renderer = new THREE.CanvasRenderer(); 
 
 		renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-		document.body.appendChild(renderer.domElement);
+		container.appendChild(renderer.domElement);
 
 		// EVENTS
 		THREEx.WindowResize(renderer, camera);
@@ -221,12 +234,6 @@ $(function () {
 		texture.wrapS = texture.wrapT = THREE.RepeatWrapping; 
 		texture.repeat.set(1, 1);
 
-		// MATERIAL
-		var circleMat = new THREE.MeshBasicMaterial( {map: texture, color: 0xffffff, transparent: true, opacity: 1} );
-
-		// var circleMat = new THREE.MeshNormalMaterial( );
-		circleMat.side = THREE.DoubleSide;
-
 		// CREATE SPHERES
 		var particles = new THREE.Group();
 		particles.name = "particles";
@@ -239,43 +246,13 @@ $(function () {
 		var rad = 500;
 		var angleS = [], angleT = [];
 
-		function createSpheres(array){
-
-			for (var i = 0; i < array.length; i++){
-
-				addSphere(array[i])
-			};
-		}
-
-		function dropSphere(obj){
-			// var s = obj.angleS;
-	  //   	var t = obj.angleT;
-			// // MESH
-			// var mesh = new THREE.Mesh( circleGeo, circleMat );
-
-			// // Push object to a group objects to be animated and store properties in array
-			// mesh.position.x = camera.position.x + 10;//610;
-			// mesh.position.z = camera.position.z;//600;
-			// mesh.position.y = camera.position.y - 10;//590;
-			// var temp = {
-			// 	'mesh': mesh,
-			// 	'angles': obj,
-			// 	'moving': true,
-			// 	'elapsed': 0,
-			// 	'drop': obj.drop
-			// }
-			// animateIn.push(temp);
-			// animateInGroup.add(mesh);
-		}
-
 	    function addSphere(obj){
-
-	    	var s = obj.angleS;
-	    	var t = obj.angleT;
 
 	    	// GEOMETRY
 			var circleGeo = new THREE.SphereGeometry( 5 , 32 , 32 ); //+ obj.score
-			console.log(obj.score)
+
+			// MATERIAL
+			var circleMat = new THREE.MeshBasicMaterial( {color: obj.color, transparent: true, opacity: 1} );
 
 			// MESH
 			var mesh = new THREE.Mesh( circleGeo, circleMat );
@@ -286,10 +263,12 @@ $(function () {
 			mesh.position.y = camera.position.y - 10;//590;
 			var temp = {
 				'mesh': mesh,
-				'angles': obj,
+				'end': obj.end,
 				'moving': true,
 				'elapsed': 0,
-				'drop': obj.drop
+				'drop': obj.drop,
+				'score': obj.score,
+				'color': obj.color
 			}
 			animateIn.push(temp);
 			animateInGroup.add(mesh);
@@ -300,102 +279,180 @@ $(function () {
 		light.position.set(100,250,100);
 		scene.add(light);
 		
-		// CONTROLS
-		var controls = new THREE.OrbitControls(camera, renderer.domElement);
-		// controls.maxDistance = 2000;
-		var keyboard = new KeyboardState();
 
 		// ANIMATION	
 		var counter = 0;
 		var r;
 		var animateIn = [];
 
+		//////////////settings/////////
+		var movementSpeed = 30;
+		var totalObjects = 200;
+		var objectSize = 10;
+		////////////////////////////////
+		var parts = [];
+		var s, t;
+
+		var shapes = ["asteroid", "smile", "heart", "star", "donut"];
+		var shape;
+
+		function ExplodeAnimation(x, y, z, color, rad, num, sh){
+		  var geometry = new THREE.Geometry();
+		  var dirs = [];
+		  if (num == null) num = totalObjects;
+
+		  if (rad == null ) rad = 1+Math.random()*5;
+		  
+		  for (var i = 0; i < num; i ++){ 
+		    var vertex = new THREE.Vector3();
+		    vertex.x = x;
+		    vertex.y = y;
+		    vertex.z = z;
+
+		    s = 2*Math.PI*Math.random();
+		    t = 2*Math.PI*Math.random();
+
+		    var dirX, dirY, dirZ;
+
+		    if (num == 1){
+		    	dirX = x/100;
+		    	dirY = -10;
+		    	dirZ = z/100;
+
+		    } else if (sh == "asteroid") {
+		    	var asteroidX = Math.pow(Math.cos(s), 3);
+				var asteroidY = Math.pow(Math.sin(s), 3);
+
+				dirZ = -Math.abs(rad/5)*asteroidX;
+				dirX = -Math.abs(rad/5)*asteroidY;
+				dirY = 1;
+				console.log("asteroid");
+
+		    } else if (sh == "smile"){
+		    	var smileyX = [2 * (Math.cos(s)), Math.cos(s/2), -1 + Math.cos(s)/10, 1 + Math.cos(s)/10];
+				var smileyY = [2 * (Math.sin(s)), -Math.sin(s/2), 1 + Math.sin(s)/10, 1 + Math.sin(s)/10];
+
+				var f = i%4;
+				dirZ = -Math.abs(rad/2)*smileyX[f];
+				dirX = -Math.abs(rad/2)*smileyY[f];
+				dirY = 1;
+				console.log("smile");
+
+		    } else if (sh == "heart"){
+		    	var heartZ = 16*Math.pow(Math.sin(s), 3);
+				var heartX = 13*Math.cos(s) - 5*Math.cos(2*s) - 2*Math.cos(3*s) - Math.cos(4*s);
+
+				dirZ = -heartZ/10;
+				dirX = -heartX/10;
+				dirY = 1;
+				console.log("heart");
+
+			} else if (sh == "star") {
+				var starX = (2*Math.sin(3*s)*Math.cos(s));
+				var starY = (2*Math.sin(3*s)*Math.sin(s));
+				var starZ = Math.sin(3*s);
+
+				dirZ = Math.abs(rad/5)*starX;
+				dirX = Math.abs(rad/5)*starY;
+				dirY = Math.abs(rad/5)*starZ;
+				console.log("star");
+
+			} else if (sh == "donut"){
+				var R = rad/2;
+
+				var donutX = Math.cos(s)*(rad + R*Math.cos(t));
+				var donutY = Math.sin(s)*(rad + R*Math.cos(t));
+				var donutZ = R*Math.sin(t);
+
+				dirZ = -donutX/2;
+				dirX = -donutY/2;
+				dirY = donutZ/2;
+				console.log("donut");
+
+			} else {
+		    	dirX = rad * Math.cos(t) * Math.sin(s);
+		    	dirY = rad * Math.sin(t) * Math.sin(s);
+		    	dirZ = rad * Math.cos(s);
+		    }
+			
+	      	geometry.vertices.push( vertex );
+		    dirs.push({
+		    	x: dirX,
+		    	y: dirY,
+		    	z: dirZ
+		    });
+		  }
+
+		  var material = new THREE.PointsMaterial( { size: objectSize,  color: color });
+		  var particles = new THREE.Points( geometry, material );
+		  
+		  this.object = particles;
+		  this.status = true;
+		  
+		  this.xDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+		  this.yDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+		  this.zDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+		  
+		  scene.add( this.object  ); 
+
+		  var that = this;
+		  setTimeout(function(){
+		  	scene.remove(that.object);
+		  }, 15000)
+
+		  var counter = 0;
+		  
+		  this.update = function(){
+		  	counter += 0.01;
+		    if (this.status === true){
+		      var pCount = num;
+		      while(pCount--) {
+		        var particle =  this.object.geometry.vertices[pCount];
+		        var velocity = 
+		        particle.y += -0.98*counter*counter*Math.abs(dirs[pCount].y);
+		        particle.x += dirs[pCount].x;
+		        particle.z += dirs[pCount].z;
+		      }
+		      this.object.geometry.verticesNeedUpdate = true;
+		      this.object.material.transparent = true;
+		      this.object.material.opacity -= 0.001;
+
+		    }
+		  }
+		}
+
+		window.addEventListener( 'resize', onWindowResize, false );
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
 
 		function animate() {
+
+			var pCount = parts.length;
+			while(pCount--) {
+				parts[pCount].update();
+			}
 
 			// POSITION
 			counter += 0.002;
 
-			// Spin camera view
-			// camera.position.y = Math.cos( counter ) * 600;
-		 //    camera.position.z = Math.sin( counter ) * 600;
-		 //    camera.lookAt( scene.position );
-
-		
-			r = rad/4 + Math.abs((3*rad/4) * Math.sin(counter));
-
-			for (var i = 0; i < particles.children.length; i++){
-				var p = particles.children[i].position;
-				var a = angleT[i];
-				var b = angleS[i];
-
-				// SPHERE
-				// p.x = r * Math.cos(angleT[i] + counter) * Math.sin(angleS[i]);
-				// p.y = r * Math.sin(angleT[i] + counter) * Math.sin(angleS[i]);
-				// p.z = r * Math.cos(angleS[i]);
-
-				// SMILEY
-				// var smileyX = [2 * (Math.cos(a)), Math.cos(a/2), -1 + Math.cos(a)/10, 1 + Math.cos(a)/10];
-				// var smileyY = [2 * (Math.sin(a)), -Math.sin(a/2), 1 + Math.sin(a)/10, 1 + Math.sin(a)/10];
-
-				// var f = i%4;
-				// p.x = Math.abs(r/2)*smileyX[f];
-				// p.y = Math.abs(r/2)*smileyY[f];
-				// p.z = 1;
-
-				// HEART
-				// var heartX = 16*Math.pow(Math.sin(a), 3);
-				// var heartY = 13*Math.cos(a) - 5*Math.cos(2*a) - 2*Math.cos(3*a) - Math.cos(4*a);
-
-				// p.x = Math.abs(r/15)*heartX;
-				// p.y = Math.abs(r/15)*heartY;
-				// p.z = 1;
-
-				// STAR
-				// var starX = (2*Math.sin(3*a)*Math.cos(a));
-				// var starY = (2*Math.sin(3*a)*Math.sin(a));
-				// var starZ = Math.sin(3*a);
-
-				// p.x = Math.abs(r/5)*starX;
-				// p.y = Math.abs(r/5)*starY;
-				// p.z = Math.abs(r/5)*starZ;
-
-				// ASTEROID
-
-				// var asteroidX = Math.pow(Math.cos(a), 3);
-				// var asteroidY = Math.pow(Math.sin(a), 3);
-
-				// p.x = Math.abs(r/5)*asteroidX;
-				// p.y = Math.abs(r/5)*asteroidY;
-				// p.z = 1;
-
-
-				// DONUT
-				var R = r/2;
-
-				var donutX = Math.cos(a)*(r + R*Math.cos(b));
-				var donutY = Math.sin(a)*(r + R*Math.cos(b));
-				var donutZ = R*Math.sin(b);
-
-				p.x = donutX;
-				p.y = donutY;
-				p.z = donutZ;
-
-			}
-
 			// ANIMATE TRAJECTORY ON ENTRY
 			for (var i = 0; i < animateInGroup.children.length; i++){
 				var speed = 20;
-				animateIn[i].elapsed += 0.01;
+				var temp = animateIn[i];
+				temp.elapsed += 0.01;
 				
-				var object = animateIn[i].mesh;
-				var s = animateIn[i].angles.angleS;
-				var t = animateIn[i].angles.angleT;
+				var object = temp.mesh;
 				var startX = object.position.x, startY = object.position.y, startZ = object.position.z;
 
-				var endX = r * Math.cos(t + counter) * Math.sin(s);
-				var endY = r * Math.sin(t + counter) * Math.sin(s);
-				var endZ = r * Math.cos(s);
+				var endX = temp.end.x;
+				var endY = temp.end.y;
+				var endZ = temp.end.z;
 
 				// On starting movement
 				var distance = Math.sqrt(Math.pow(endX-startX,2)+Math.pow(endY-startY,2)+Math.pow(endZ-startZ,2));
@@ -404,36 +461,26 @@ $(function () {
 				var directionZ = (endZ-startZ) / distance;
 			
 				// On update
-				if(animateIn[i].moving == true){
+				if(temp.moving == true){
 
-				    object.position.x += directionX * speed * animateIn[i].elapsed;
-				    object.position.y += directionY * speed * animateIn[i].elapsed;
-				    object.position.z += directionZ * speed * animateIn[i].elapsed;
+				    object.position.x += directionX * speed * temp.elapsed;
+				    object.position.y += directionY * speed * temp.elapsed;
+				    object.position.z += directionZ * speed * temp.elapsed;
 
 				   if (distance <= 10){
-				   		if (animateIn[i].drop == false){
+				   		
+				        temp.moving = false;
 
-					        object.position.x = endX;
-					        object.position.y = endY;
-					        object.position.z = endZ;
-
-					        animateIn[i].moving = false;
-					        particles.add(animateIn[i].mesh);
-					        angleT.push(t);
-							angleS.push(s);
-
-					        animateInGroup.remove(animateIn[i].mesh);
-					        animateIn.splice(i, 1);
-					    } else {
-					    	object.position.x = endX;
-					        object.position.y = endY;
-					        object.position.z = endZ;
-
-					        animateIn[i].moving = false;
-
-					        animateInGroup.remove(animateIn[i].mesh);
-					        animateIn.splice(i, 1);
-					    }
+				        if (temp.drop){
+				   			parts.push(new ExplodeAnimation(endX, endY, endZ, temp.color, 0, 1));
+				   		} else {
+							var m = Math.floor(Math.random()*shapes.length);
+							var sh = shapes[m];
+				   			parts.push(new ExplodeAnimation(endX, endY, endZ, temp.color, temp.score/2, null, sh));
+				   		}
+				      
+				        animateInGroup.remove(object);
+				        animateIn.splice(i, 1);
 
 				    }
 				}
@@ -441,9 +488,7 @@ $(function () {
 
 		    requestAnimationFrame(animate);
 		 
-			controls.update();
 			renderer.render(scene,camera);
-			// cube.rotation.y += 0.01;
 
 		};
 
